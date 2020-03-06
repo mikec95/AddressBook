@@ -34,8 +34,12 @@ import javax.swing.table.DefaultTableModel;
  *
  */
 public class AddressBook extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/*
-	 * variable declaration
+	 * Create elements on GUI
 	 */
 	JTable jt;
 	String[] btns = { "Add", "Remove", "Update", "Save" };
@@ -44,52 +48,58 @@ public class AddressBook extends JPanel {
 	/*
 	 * Address book constructor
 	 */
-	public AddressBook() {
-
-		JFrame jf = new JFrame();// jframe declaration
-		String[] columnName = { "First Name", "Last Name", "Phone Number",
-				"City" };// declare column names in array
-		String[][] data = null;// set default data in columns to nothing
-
+	AddressBook() {
+		/*
+		 * Create and initialize empty array for data and column names. initialize table
+		 */
+		String[] columnName = { "First Name", "Last Name", "Phone Number", "City" };// declare column names in array
+		String[][] data = null;
 		jt = new JTable(new DefaultTableModel(data, columnName)) {
-			boolean cellEditable(int data, int columnName) {
-				return true;// allow cells to be editable
-			}
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 		};
 
-		jt.setAutoCreateRowSorter(true);// allow auto sorting of rows
-		jt.setPreferredScrollableViewportSize(new Dimension(450, 390));// set
-																		// size
-																		// of
-																		// scroll
-																		// pane
+		/*
+		 * basic config for table
+		 */
+		jt.setAutoCreateRowSorter(true);
+		jt.setPreferredScrollableViewportSize(new Dimension(450, 390));
 		jt.setFillsViewportHeight(true);
 
+		/*
+		 * Add scroll window to frame
+		 */
 		JScrollPane jps = new JScrollPane(jt);
-		add(jps);// add scrollpane
+		add(jps);
 
-		Buttons b = new Buttons();
+		/*
+		 * create button panel
+		 */
 		JPanel buttonPanel = new JPanel(new GridLayout());
 
 		/*
-		 * buttons and add to panel
+		 * create buttons and add buttons to button panel
 		 */
+		Buttons b = new Buttons();
 		add = new JButton("Add");
 		add.addActionListener(b);
 		buttonPanel.add(add);
-
 		remove = new JButton("Remove");
 		remove.addActionListener(b);
 		buttonPanel.add(remove);
-
 		save = new JButton("Save");
 		save.addActionListener(b);
 		buttonPanel.add(save);
-
 		load = new JButton("Load");
 		load.addActionListener(b);
 		buttonPanel.add(load);
 
+		/*
+		 * Add button panel to the bottom of the page.
+		 */
 		add(buttonPanel, BorderLayout.SOUTH);
 	}
 
@@ -136,7 +146,6 @@ public class AddressBook extends JPanel {
 						 */
 						File newFile = new File("Contacts.txt");
 						newFile.createNewFile();
-						JOptionPane.showMessageDialog(null, "File Created");
 					}
 
 					FileWriter fw = new FileWriter(file.getAbsoluteFile());// get
@@ -154,33 +163,43 @@ public class AddressBook extends JPanel {
 					for (int i = 0; i < jt.getRowCount(); i++) {
 						for (int j = 0; j < jt.getColumnCount(); j++) {
 							bw.write(jt.getModel().getValueAt(i, j) + " ");
-							bw.write(" // ");
+							bw.write("\n");
 						}
-
+						bw.write("\n\n");
 					}
-					JOptionPane.showMessageDialog(null, "Done!");// show done
-																	// when done
-																	// saving
 					bw.close();// close buffered writer
 					fw.close();// close filewriter
 				} catch (IOException e) {
 					e.printStackTrace();// print exception
 				}
 			} else if (jb.equals(load)) {
-				JOptionPane
-						.showMessageDialog(null,
-								"This is supposed to populate the table, but it doesn't work");// need
-																								// to
-																								// fix
-																								// to
-																								// load
-																								// data
-																								// from
-																								// file
-																								// to
-																								// table
-																								// after
-																								// pressed
+				String filePath = "Contacts.txt";
+				File file = new File(filePath);
+
+				try {
+					BufferedReader br = new BufferedReader(new FileReader(file));
+					// get the first line
+					// get the columns name from the first line
+					// set columns name to the jtable model
+					String firstLine = br.readLine().trim();
+					String[] columnsName = firstLine.split(",");
+					DefaultTableModel model = (DefaultTableModel) jt.getModel();
+					model.setColumnIdentifiers(columnsName);
+
+					// get lines from txt file
+					Object[] tableLines = br.lines().toArray();
+
+					// extratct data from lines
+					// set data to jtable model
+					for (int i = 0; i < tableLines.length; i++) {
+						String line = tableLines[i].toString().trim();
+						String[] dataRow = line.split("/");
+						model.addRow(dataRow);
+					}
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			}
 		}
 	}
