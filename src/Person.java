@@ -5,9 +5,9 @@
  *
  */
 public class Person {
-	public String firstName, lastName, phoneNumber, city;
+	private String firstName, lastName, phoneNumber, city;
 
-	public Person(String firstName, String lastName, String phoneNumber,
+	Person(String firstName, String lastName, String phoneNumber,
 			String city) {
 		this.firstName = firstName;
 		this.lastName = lastName;
